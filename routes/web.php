@@ -23,4 +23,3 @@ use Illuminate\Support\Facades\Route;
 Route::resource('/topik', TopikController::class);
 Route::resource('/soal', BankSoalController::class);
 Route::resource('/paket', PaketController::class);
-Route::get('soal/update', [BankSoalController::class, ]);

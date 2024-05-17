@@ -232,7 +232,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <div id="modalId"></div>
+                        <div id="modalId" class="d-none"></div>
                         <div class="button-level-group">
                             <button class="custom-button-level" id="modalDifficulty"
                                 style="margin-right: 10px;"></button>
@@ -278,7 +278,7 @@
                                 <div class="card-total-question"
                                     style="background-color: #CEF9EC; border: 2px solid #1AB394;">
                                     <div class="total-question-content">
-                                        <h4 style="font-weight: 800;">{{ $soal_aktif }}</h4>
+                                        <h4 style="font-weight: 800;" id="soal_aktif">{{ $soal_aktif }}</h4>
                                         <hr style=" background-color: #1AB394;">
                                         <h4>Jumlah Soal Aktif</h4>
                                     </div>
@@ -289,7 +289,7 @@
                                 <div class="card-total-question"
                                     style="background-color: #FEE5E5; border: 2px solid #ED5564;">
                                     <div class="total-question-content">
-                                        <h4 style="font-weight: 800;">{{ $soal_expired }}</h4>
+                                        <h4 style="font-weight: 800;" id="soal_expired">{{ $soal_expired }}</h4>
                                         <hr style=" background-color: #ED5564;">
                                         <h4>Jumlah Soal Nonaktif</h4>
                                     </div>
@@ -352,6 +352,7 @@
                         const answers = JSON.parse(this.getAttribute('data-answers'));
                         const expired = this.getAttribute('data-expired');
 
+                        document.getElementById('modalId').textContent = id;
                         document.getElementById('modalDifficulty').textContent = difficulty;
                         document.getElementById('modalTopic').textContent = topic;
                         document.getElementById('modalQuestionText').textContent = question;
@@ -363,7 +364,7 @@
                             const optionDiv = document.createElement('div');
                             optionDiv.className = 'form-check';
                             optionDiv.innerHTML = `
-                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault${index}" ${answers[index] ? 'checked' : ''}>
+                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault${index}" ${answers[index] ? 'checked' : ''} disabled>
                             <label class="form-check-label" for="flexRadioDefault${index}">
                                 <p>${option}</p>
                             </label>`;
@@ -380,7 +381,7 @@
                         inputElement.setAttribute("id", "deleteToggle");
                         inputElement.setAttribute("data-toggle", "toggle");
                         inputElement.setAttribute("style", "border-radius: 50px;");
-                        if (expired == 1) {
+                        if (expired == 0) {
                             inputElement.setAttribute("checked", "true");
                         }
 
@@ -475,32 +476,35 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                $('#deleteToggle').change(function() {
-                    let isExpired = !$(this).prop('checked');
-                    let soalId = document.getElementById('modalId').textContent;
+                $(document).ready(function() {
+                    // Menambahkan event listener ke toggle penghapusan
+                    $(document).on('change', '#deleteToggle', function() {
+                        let isExpired = !$(this).prop('checked');
+                        let soalId = document.getElementById('modalId').textContent;
 
-                    // SweetAlert confirmation
-                    if (isExpired) {
-                        Swal.fire({
-                            title: "Are you sure?",
-                            text: "You won't be able to revert this!",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#33CEAD",
-                            cancelButtonColor: "#ED5564",
-                            confirmButtonText: "Yes, delete it!",
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // Update expired status in database
-                                updateSoalStatus(soalId, isExpired);
-                            } else {
-                                // Revert checkbox status if user cancels
-                                $(this).prop('checked', true);
-                            }
-                        });
-                    } else {
-                        updateSoalStatus(soalId, isExpired);
-                    }
+                        // SweetAlert confirmation
+                        if (isExpired) {
+                            Swal.fire({
+                                title: "Are you sure?",
+                                text: "You won't be able to revert this!",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#33CEAD",
+                                cancelButtonColor: "#ED5564",
+                                confirmButtonText: "Yes, delete it!",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Update expired status in database
+                                    updateSoalStatus(soalId, isExpired);
+                                } else {
+                                    // Revert checkbox status if user cancels
+                                    $(this).prop('checked', true);
+                                }
+                            });
+                        } else {
+                            updateSoalStatus(soalId, isExpired);
+                        }
+                    });
                 });
             });
 
@@ -512,27 +516,31 @@
                     method: 'PUT',
                     data: {
                         _token: token,
+                        soalId: soalId,
                         expired: isExpired ? 1 : 0
                     },
                     success: function(response) {
                         if (response.success) {
-                            let card = $(`[data-id="${soalId}"]`).closest('.col-sm-4.col-6.mb-4');
-                            if (isExpired) {
-                                card.addClass('nonaktif-card overlay-card');
-                                card.removeClass('col-sm-4 col-6 mb-4');
-                                $('.main-wrapper .row').append(card);
-                                card.find('button, a').prop('disabled', true).css('pointer-events', 'none');
-                                Swal.fire({
-                                    title: "Deleted!",
-                                    text: "Your file has been deleted.",
-                                    confirmButtonColor: "#33CEAD",
-                                    icon: "success"
-                                });
-                            } else {
-                                card.removeClass('nonaktif-card overlay-card');
-                                card.addClass('col-sm-4 col-6 mb-4');
-                                card.find('button, a').prop('disabled', false).css('pointer-events', 'auto');
-                            }
+                            let soalAktif = document.getElementById('soal_aktif').textContent = response.soal_aktif;
+                            let soalExpired = document.getElementById('soal_expired').textContent = response.soal_expired;
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Your file has been deleted.",
+                                confirmButtonColor: "#33CEAD",
+                                icon: "success"
+                            });
+                            // let card = $(`[data-id="${soalId}"]`).closest('.col-sm-4.col-6.mb-4');
+                            // if (isExpired) {
+                            //     card.addClass('nonaktif-card overlay-card');
+                            //     card.removeClass('col-sm-4 col-6 mb-4');
+                            //     $('.main-wrapper .row').append(card);
+                            //     card.find('button, a').prop('disabled', true).css('pointer-events', 'none');
+                                
+                            // } else {
+                            //     card.removeClass('nonaktif-card overlay-card');
+                            //     card.addClass('col-sm-4 col-6 mb-4');
+                            //     card.find('button, a').prop('disabled', false).css('pointer-events', 'auto');
+                            // }
                         } else {
                             Swal.fire({
                                 title: "Error!",
