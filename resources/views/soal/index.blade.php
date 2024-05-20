@@ -491,18 +491,32 @@
                                 showCancelButton: true,
                                 confirmButtonColor: "#33CEAD",
                                 cancelButtonColor: "#ED5564",
-                                confirmButtonText: "Yes, delete it!",
+                                confirmButtonText: "Non aktifkan soal",
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     // Update expired status in database
                                     updateSoalStatus(soalId, isExpired);
                                 } else {
-                                    // Revert checkbox status if user cancels
-                                    $(this).prop('checked', true);
+                                    
                                 }
                             });
                         } else {
-                            updateSoalStatus(soalId, isExpired);
+                            Swal.fire({
+                                title: "Are you sure?",
+                                text: "You won't be able to revert this!",
+                                icon: "warning",
+                                showCancelButton: true,
+                                confirmButtonColor: "#33CEAD",
+                                cancelButtonColor: "#ED5564",
+                                confirmButtonText: "Aktifkan soal",
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Update expired status in database
+                                    updateSoalStatus(soalId, isExpired);
+                                } else {
+                                    
+                                }
+                            });
                         }
                     });
                 });
