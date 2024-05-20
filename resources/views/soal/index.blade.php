@@ -320,7 +320,6 @@
                                                     data-topic="{{ $soal->topik->nm_topik }}"
                                                     data-question="{{ $soal->pertanyaan }}"
                                                     data-options="{{ $jawabans->where('id_soal', $soal->id_soal)->pluck('jawaban') }}"
-                                                    data-answers="{{ $jawabans->where('id_soal', $soal->id_soal)->pluck('is_true') }}"
                                                     data-expired="{{ $soal->is_expired }}">Detail</a>
                                             </div>
                                         </div>
@@ -345,53 +344,69 @@
                             existingCheckbox.remove();
                         }
                         const id = this.getAttribute('data-id');
-                        const difficulty = this.getAttribute('data-difficulty');
-                        const topic = this.getAttribute('data-topic');
-                        const question = this.getAttribute('data-question');
-                        const options = JSON.parse(this.getAttribute('data-options'));
-                        const answers = JSON.parse(this.getAttribute('data-answers'));
-                        const expired = this.getAttribute('data-expired');
+                        getSoal(id);
+                    });
 
-                        document.getElementById('modalId').textContent = id;
-                        document.getElementById('modalDifficulty').textContent = difficulty;
-                        document.getElementById('modalTopic').textContent = topic;
-                        document.getElementById('modalQuestionText').textContent = question;
+                    function getSoal(id) {
+                        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                        const optionsContainer = document.getElementById('modalOptions');
-                        optionsContainer.innerHTML = ''; // Clear existing options
+                        $.ajax({
+                            url: '/soal/${id}',
+                            method: 'GET',
+                            data: {
+                                _token: token,
+                                soalId: id,
+                            },
+                            success: function(response) {
+                                const options = response.opsi;
+                                const answers = response.jawaban;
+                                const expired = response.is_expired;
 
-                        options.forEach((option, index) => {
-                            const optionDiv = document.createElement('div');
-                            optionDiv.className = 'form-check';
-                            optionDiv.innerHTML = `
+                                document.getElementById('modalId').textContent = response.id_soal;
+                                document.getElementById('modalDifficulty').textContent = response
+                                    .tingkat_kesulitan;
+                                document.getElementById('modalTopic').textContent = response.topik;
+                                document.getElementById('modalQuestionText').textContent = response
+                                    .pertanyaan;
+
+                                const optionsContainer = document.getElementById('modalOptions');
+                                optionsContainer.innerHTML = ''; // Clear existing options
+
+                                options.forEach((option, index) => {
+                                    const optionDiv = document.createElement('div');
+                                    optionDiv.className = 'form-check';
+                                    optionDiv.innerHTML = `
                             <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault${index}" ${answers[index] ? 'checked' : ''} disabled>
                             <label class="form-check-label" for="flexRadioDefault${index}">
                                 <p>${option}</p>
                             </label>`;
-                            optionsContainer.appendChild(optionDiv);
+                                    optionsContainer.appendChild(optionDiv);
+                                });
+
+                                const existingCheckbox = document.getElementById('deleteToggle');
+                                if (existingCheckbox) {
+                                    $('#deleteToggle').bootstrapToggle('destroy');
+                                    existingCheckbox.remove();
+                                }
+
+                                const inputElement = document.createElement("input");
+                                inputElement.setAttribute("type", "checkbox");
+                                inputElement.setAttribute("id", "deleteToggle");
+                                inputElement.setAttribute("data-toggle", "toggle");
+                                inputElement.setAttribute("style", "border-radius: 50px;");
+                                if (expired == 0) {
+                                    inputElement.setAttribute("checked", "true");
+                                }
+
+                                const modalFooter = document.querySelector(".modal-footer");
+                                modalFooter.appendChild(inputElement);
+
+                                $(inputElement).bootstrapToggle();
+
+                                modal.show();
+                            }
                         });
-
-                        // const deleteToggle = document.getElementById('deleteToggle');
-                        // if (expired == 0) {
-                        //     deleteToggle.setAttribute("checked", "true");
-                        // }
-
-                        var inputElement = document.createElement("input");
-                        inputElement.setAttribute("type", "checkbox");
-                        inputElement.setAttribute("id", "deleteToggle");
-                        inputElement.setAttribute("data-toggle", "toggle");
-                        inputElement.setAttribute("style", "border-radius: 50px;");
-                        if (expired == 0) {
-                            inputElement.setAttribute("checked", "true");
-                        }
-
-                        var modalFooter = document.querySelector(".modal-footer");
-                        modalFooter.appendChild(inputElement);
-
-                        $(inputElement).bootstrapToggle();
-
-                        modal.show();
-                    });
+                    }
                 });
             });
         </script>
@@ -497,7 +512,7 @@
                                     // Update expired status in database
                                     updateSoalStatus(soalId, isExpired);
                                 } else {
-                                    
+
                                 }
                             });
                         } else {
@@ -514,7 +529,7 @@
                                     // Update expired status in database
                                     updateSoalStatus(soalId, isExpired);
                                 } else {
-                                    
+
                                 }
                             });
                         }
@@ -535,21 +550,23 @@
                     },
                     success: function(response) {
                         if (response.success) {
-                            let soalAktif = document.getElementById('soal_aktif').textContent = response.soal_aktif;
-                            let soalExpired = document.getElementById('soal_expired').textContent = response.soal_expired;
                             Swal.fire({
-                                title: "Deleted!",
-                                text: "Your file has been deleted.",
+                                text: "Berhasil dirubah",
                                 confirmButtonColor: "#33CEAD",
                                 icon: "success"
                             });
+
+                            let soalAktif = document.getElementById('soal_aktif').textContent = response.soal_aktif;
+                            let soalExpired = document.getElementById('soal_expired').textContent = response
+                                .soal_expired;
+
                             // let card = $(`[data-id="${soalId}"]`).closest('.col-sm-4.col-6.mb-4');
                             // if (isExpired) {
                             //     card.addClass('nonaktif-card overlay-card');
                             //     card.removeClass('col-sm-4 col-6 mb-4');
                             //     $('.main-wrapper .row').append(card);
                             //     card.find('button, a').prop('disabled', true).css('pointer-events', 'none');
-                                
+
                             // } else {
                             //     card.removeClass('nonaktif-card overlay-card');
                             //     card.addClass('col-sm-4 col-6 mb-4');

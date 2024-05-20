@@ -93,9 +93,21 @@ class BankSoalController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(BankSoal $bankSoal)
+    public function show(Request $request, BankSoal $bankSoal)
     {
-        //
+        $soal = BankSoal::where('id_soal', $request->input('soalId'))->first();
+
+        $response = [
+            'id_soal' => $soal->id_soal,
+            'tingkat_kesulitan' => $soal->tingkat_kesulitan->nm_tingkat_kesulitan,
+            'topik' => $soal->topik->nm_topik,
+            'pertanyaan' => $soal->pertanyaan,
+            'opsi' => Jawaban::where('id_soal', $soal->id_soal)->pluck('jawaban'),
+            'jawaban' => Jawaban::where('id_soal', $soal->id_soal)->pluck('is_true'),
+            'is_expired' => $soal->is_expired,
+        ];
+
+        return response()->json($response);
     }
 
     /**
@@ -115,11 +127,15 @@ class BankSoalController extends Controller
         $bankSoal::where('id_soal', $request->input('soalId'))
             ->update(['is_expired' => $request->input('expired')]);
 
+        $expired = $bankSoal::where('id_soal', $request->input('soalId'))
+            ->get();
+
         // Return a JSON response indicating success
         return response()->json([
             'success' => true,
             'soal_aktif' => BankSoal::where('is_expired', 0)->count(),
             'soal_expired' => BankSoal::where('is_expired', 1)->count(),
+            'isExpired' => $expired,
         ]);
     }
 
