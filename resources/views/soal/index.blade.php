@@ -396,6 +396,8 @@
                                 inputElement.setAttribute("style", "border-radius: 50px;");
                                 if (expired == 0) {
                                     inputElement.setAttribute("checked", "true");
+                                } else {
+                                    inputElement.setAttribute("disabled", "true");
                                 }
 
                                 const modalFooter = document.querySelector(".modal-footer");
@@ -559,6 +561,9 @@
                             let soalAktif = document.getElementById('soal_aktif').textContent = response.soal_aktif;
                             let soalExpired = document.getElementById('soal_expired').textContent = response
                                 .soal_expired;
+                            if(response.expired == 1){
+                                document.getElementById('deleteToggle').setAttribute("disabled", "true");
+                            }
 
                             // let card = $(`[data-id="${soalId}"]`).closest('.col-sm-4.col-6.mb-4');
                             // if (isExpired) {

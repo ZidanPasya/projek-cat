@@ -128,14 +128,15 @@ class BankSoalController extends Controller
             ->update(['is_expired' => $request->input('expired')]);
 
         $expired = $bankSoal::where('id_soal', $request->input('soalId'))
-            ->get();
+            ->pluck('is_expired')
+            ->first();
 
         // Return a JSON response indicating success
         return response()->json([
             'success' => true,
             'soal_aktif' => BankSoal::where('is_expired', 0)->count(),
             'soal_expired' => BankSoal::where('is_expired', 1)->count(),
-            'isExpired' => $expired,
+            'expired' => $expired,
         ]);
     }
 
