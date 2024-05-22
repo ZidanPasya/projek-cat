@@ -415,76 +415,33 @@
     <br>
     <div class="row">
         @foreach ($topiks as $topik)
-        <div class="col-sm-3 col-6 mb-4"> <!-- Ubah col-sm-4 menjadi col-sm-3 -->
+        <div class="col-sm-3 col-6 mb-4">
             <div class="card custom-card">
                 <div class="card-body">
                     <div class="button-group">
                         <span class="bi bi-list-task" style="font-size:24px; color: #ffffff; background-color: #58819F; padding: 5px 10px; border-radius:50%;"></span>
                         <h5 style="margin-bottom: -10px; margin-top: 10px;font-size: 14px; font-weight: bold;">{{ $topik->nm_topik }}</h5>
-                        <hr style="border-width: 5px; width: 30px; border-color: #1AB394; ">  
-                        <p style="font-size:14px; color:#B0B0B0; margin-top: 10px; font-weight: 500;">{{$soals->where('id_topik', $topik->id)->count()}}</p>                        
+                        <hr style="border-width: 5px; width: 30px; border-color: #1AB394;">
+                        <p style="font-size:14px; color:#B0B0B0; margin-top: 10px; font-weight: 500;">{{$soals->where('id_topik', $topik->id)->count()}}</p>
                     </div>
-        
-                    <div class="content-question" style="margin-top: 110px;"> <!-- Menambah margin-top di sini -->                        
-                        <a href="#" id="DetailSoal" style="color:#1AB394; font-size: 14px; text-align: right; font-weight: 500;"
-                        data-id="{{ $topik->id }}"
-                        data-difficult="{{$soals->where('id_topik', $topik->id)}}"
-                        {{-- data-topic="{{ $topik->nm_topik }}"
-                        data-question="{{ $soals->pertanyaan }}" --}}
-                        >Lihat List Soal</a>
+                    <div class="content-question" style="margin-top: 110px;">
+                        <a href="#" class="lihat-soal" style="color:#1AB394; font-size: 14px; text-align: right; font-weight: 500;" data-id="{{ $topik->id }}">Lihat List Soal</a>
                     </div>
                 </div>
             </div>
         </div>
-        @endforeach                    
-        <!-- Tambah elemen col-sm-3 col-6 mb-4 sebanyak yang diperlukan -->
+        @endforeach
     </div>
     
-    <section id="dash-cartSection" class="dash-cartSection">        
-        <div class="row" id="test5" style="background-color:white; margin:auto; overflow-y: auto;">           
-            <i class="bi bi-arrow-right-circle-fill" style="font-size: 40px; color: #58819F; cursor: pointer;"></i>   
-            <h1 id="test1" style="color: #1AB394"></h1>
-            
-            <div class="col-md-6 mt-4">
-                <div class="card custom-card">
-                    <div class="card-body">
-                        <div class="button-group">
-                            <button id="test3" class="custom-button-level"><span></span></button>
-                            <button id="test4" class="custom-button-topik"><span></span></button>
-                        </div>
-                        <div class="content-question">
-                            <p id="test2" style="font-size: 12px; font-weight: 500;"> </p>
-                            <a id="OpenModalBtn1"
-                                style="color:grey; font-size: 14px; align-self: flex-end;">Detail</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-           
-            {{-- <div class="col-md-6 mt-4">
-                <div class="card custom-card">
-                    <div class="card-body">
-                        <div class="button-group">
-                            <button class="custom-button-level"><span>Mudah</span></button>
-                            <button class="custom-button-topik"><span>Kompetensi
-                                    Dasar</span></button>
-                        </div>
-                        <div class="content-question">
-                            <p style="font-size: 12px; font-weight: 500;"> Itu pun banyak ilmuwan terapan yang
-                                meminjam ilmu dasar atau ilmu terapan lain
-                                sehingga
-                                terbentuk program multidisiplin seperti arsitektur yang dijodohkan dengan
-                                antropologi atau
-                                arkeologi, akuntansi dengan ilmu keuangan.</p>
-                            <a id="OpenModalBtn1"
-                                style="color:grey; font-size: 14px; align-self: flex-end;">Detail</a>
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
+    
+    <section id="dash-cartSection" class="dash-cartSection">
+        <i class="bi bi-arrow-right-circle-fill" style="font-size: 40px; color: #58819F; cursor: pointer;" id="closeCart"></i>
+        <div class="container">
+            <div class="row" id="cartContent"></div>
         </div>
-        
     </section>
+    
+    <div id="overlay"></div>
     <div id="overlay"></div>
     <div id="dash-cartSection" class="dash-cartSection">
         <div class="container">
@@ -502,7 +459,7 @@
                 $('.custom-button-level').each(function() {
                     var level = $(this).find('span').text().trim();
                     var backgroundColor;
-
+    
                     switch (level) {
                         case 'Sulit':
                             backgroundColor = '#F57781';
@@ -516,87 +473,62 @@
                         default:
                             backgroundColor = '#F57781';
                     }
-
+    
                     $(this).css('background-color', backgroundColor);
                 });
             }
             setButtonColor();
-        });
-    </script>
     
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const btn = document.querySelectorAll('#DetailSoal');  // Modified to select all elements with id 'DetailSoal'
-            const hiddenSection = document.getElementById('dash-cartSection');
-            const overlay = document.getElementById('overlay');
-            const closeButton = document.getElementById('closeCart');
-
-            btn.forEach(function(button) {
-                button.addEventListener('click', function () {
-                    const id = this.getAttribute('data-id');
-                    getSoal(id);
-                });
-            });
-
-            function getSoal(id) {
-                let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
+            const overlay = $('#overlay');
+            const cartSection = $('#dash-cartSection');
+    
+            function toggleCartSection(show) {
+                if (show) {
+                    cartSection.addClass('show');
+                    overlay.show();
+                } else {
+                    cartSection.removeClass('show');
+                    overlay.hide();
+                }
+            }
+    
+            $(document).on('click', '.lihat-soal', function() {
+                const id = $(this).data('id');
                 $.ajax({
                     url: `/topik/${id}`,
                     method: 'GET',
-                    data: {
-                        _token: token,
-                        soalId: id,
-                    },
                     success: function(response) {
-                        hiddenSection.classList.toggle('show');
-                        overlay.style.display = hiddenSection.classList.contains('show') ? 'block' : 'none';
-
-                        var semuaSoal = response.soal;
-                        var cardSoal = document.getElementById('test5');
-                        cardSoal.innerHTML = ''; // Clear existing content
-
-                        semuaSoal.forEach(function(item) {
-                            var contentCardSoal = `
+                        const cartContent = $('#cartContent');
+                        cartContent.empty();
+                        response.forEach(item => {
+                            const card = `
                                 <div class="col-md-6 mt-4">
                                     <div class="card custom-card">
                                         <div class="card-body">
                                             <div class="button-group">
                                                 <button class="custom-button-level"><span>${item.tingkat_kesulitan.nm_tingkat_kesulitan}</span></button>
-                                                <button class="custom-button-topik"><span>${item.pertanyaan}</span></button>
+                                                <button class="custom-button-topik"><span>${item.topik.nm_topik}</span></button>
                                             </div>
                                             <div class="content-question">
-                                                <p style="font-size: 12px; font-weight: 500;">${item.topik.nm_topik}</p>
-                                                <a id="OpenModalBtn1" style="color:grey; font-size: 14px; align-self: flex-end;">Detail</a>
+                                                <p style="font-size: 12px; font-weight: 500;">${item.pertanyaan}</p>
+                                                <a href="#" class="detail-soal" data-toggle="modal" data-target="#exampleModal" style="color:grey; font-size: 14px; align-self: flex-end;">Detail</a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>`;
-
-                            cardSoal.innerHTML += contentCardSoal;
+                            cartContent.append(card);
                         });
-
-                        // Reapply click event to dynamically created Detail buttons
-                        document.querySelectorAll('#OpenModalBtn1').forEach(function (button) {
-                            button.addEventListener('click', function () {
-                                $('#exampleModal').modal('show');
-                            });
-                        });
+                        setButtonColor();
+                        toggleCartSection(true);
                     },
-                    error: function(response) {
-                        console.log(response.error);
+                    error: function(error) {
+                        console.error(error);
                     }
                 });
-            }
-
-            closeButton.addEventListener('click', function () {
-                hiddenSection.classList.remove('show');
-                overlay.style.display = 'none';
             });
-
-            overlay.addEventListener('click', function () {
-                hiddenSection.classList.remove('show');
-                overlay.style.display = 'none';
+    
+            $('#closeCart, #overlay').on('click', function() {
+                toggleCartSection(false);
             });
         });
     </script>

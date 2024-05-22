@@ -45,17 +45,14 @@ class TopikController extends Controller
      * Display the specified resource.
      */
     public function show(Request $request, Topik $topik)
-    {
-        
-        $soal = BankSoal::with(['tingkat_kesulitan','topik'])->where('id_topik', $request->input('soalId'))->first();
-        // $response = [
-        //     'id_soal' => $soal->id_soal,
-        //     'tingkat_kesulitan' => $soal->tingkat_kesulitan->nm_tingkat_kesulitan,
-        //     'pertanyaan' => $soal->pertanyaan,
-        //     'topik' => $soal->topik->nm_topik,
-        // ];
-        return response()->json($soal);
-    }
+{
+    $soal = BankSoal::with(['tingkat_kesulitan', 'topik'])
+                    ->where('id_topik', $topik->id)
+                    ->get();
+
+    return response()->json($soal);
+}
+
     
 
     /**
