@@ -7,47 +7,51 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">  
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- font-awesome --}}
     <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
     <style>
-        /* CSS styles */
+        /* Your custom styles here */
         .form-group {
             margin-bottom: 1rem;
             width: 10%;
         }
+
         .input-group {
             margin-bottom: 1rem;
         }
-        
+
         .form-check-inline {
             margin-right: 1rem;
         }
-        
-        /* Style to center the form */
+
         .centered-form {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
         }
-        /* Custom style for widening the question and answer */
+
         .widen {
             margin-right: 0;
             margin-left: 0;
             width: 90%;
         }
+
         .form-control2 {
             text-align: left;
         }
-        
-        .form-check-input:checked{
-            background-color:#33CEAD;
+
+        .form-check-input:checked {
+            background-color: #33CEAD;
         }
-        .form-check-label{
+
+        .form-check-label {
             width: 100%;
         }
-        
+
         .custom-card {
             border-radius: 10px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -113,7 +117,7 @@
         }
 
         .col-sm-3 {
-            flex: 0 0 calc(25% - 10px); /* Ubah 33.333% menjadi 25% */
+            flex: 0 0 calc(25% - 10px);
             margin: 0 5px;
         }
 
@@ -129,6 +133,7 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
             border-radius: 30px;
         }
+
         .card-total-question h5 p {
             margin-left: 50px !important;
         }
@@ -156,18 +161,20 @@
             align-items: center;
         }
 
-        .header-right > * {
+        .header-right>* {
             margin-left: 10px;
-            
+
         }
+
         .header-right button {
             background-color: #F4841B;
             color: aliceblue;
-            border-radius:5px; 
-        }
-        .header-right input{
             border-radius: 5px;
-            color :#d1d1d1;
+        }
+
+        .header-right input {
+            border-radius: 5px;
+            color: #d1d1d1;
         }
 
         .dash-cartSection {
@@ -188,144 +195,113 @@
             border-top: none;
             border-right: none;
             transform: translateX(130%);
-            }
+        }
 
         .dash-cartSection.show {
-             transform: translateX(0%);
-             
+            transform: translateX(0%);
+
         }
+
         #overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Warna latar belakang semi-transparan */
-            z-index: 998; /* Atur z-index lebih rendah dari dash-cartSection */
-            display: none; /* Mulai dengan menyembunyikan overlay */
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
         }
 
-        /* dash-card */
         .custom-card {
-                        border-radius: 10px;
-                        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-                        position: relative;
-                        overflow: hidden;
-                    }
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
 
-                    .custom-card:hover {
-                        transform: scale(1.05);
-                        transition: transform 0.3s ease;
-                        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-                    }
+        .custom-card:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
 
-                    .custom-button-level {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        color: white;
-                        border: none;
-                        border-radius: 10px;
-                        background-color: #1AB394;
-                        padding: 6px 8px;
-                        margin: 5px 0;
-                        width: auto;
-                        font-size: 10px;
-                    }
+        .custom-button-level {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            background-color: #1AB394;
+            padding: 6px 8px;
+            margin: 5px 0;
+            width: auto;
+            font-size: 10px;
+        }
 
-                    .custom-button-topik {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        background-color: #799DB7;
-                        border: none;
-                        color: white;
-                        border-radius: 10px;
-                        padding: 6px 8px;
-                        margin: 5px 0;
-                    }
+        .custom-button-topik {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #799DB7;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            padding: 6px 8px;
+            margin: 5px 0;
+        }
 
-                    .button-group {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: flex-start;
-                        margin-right: 10px;
-                    }
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-right: 10px;
+        }
 
-                    .button-group button {
-                        width: 100%;
-                        text-align: center;
-                    }
+        .button-group button {
+            width: 100%;
+            text-align: center;
+        }
 
-                    .button-group button span {
-                        font-size: 11px;
-                    }
+        .button-group button span {
+            font-size: 11px;
+        }
 
-                    .card-body {
-                        display: flex;
-                        justify-content: space-between;
-                        padding: 13px;
-                    }
+        .card-body {
+            display: flex;
+            justify-content: space-between;
+            padding: 13px;
+        }
 
-                    .content-question p {
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        display: -webkit-box;
-                        -webkit-line-clamp: 4;
-                        -webkit-box-orient: vertical;
-                    }
+        .content-question p {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            margin-bottom: 10px;
+        }
 
-                    .card-total-question {
-                        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-                        border-radius: 25px;
-                        padding: 10px;
-                    }
+        .custom-card-title {
+            font-size: 14px;
+        }
 
-                    .card-content,
-                    .card-subtitle {
-                        display: flex;
-                    }
+        .custom-card-subtitle {
+            font-size: 12px;
+            color: #888;
+        }
 
-                    .total-question-content hr {
-                        height: 2px;
-                        margin-top: -4px;
-                        margin-bottom: -1px;
-                    }
+        .detail-modal {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
 
-            /* Modal */
-            .modal-header button {
-                        margin-top: 10px;
-                        color: white;
-                        border-radius: 5px;
-                        border: none;
-                        padding: 8px 10px;
-                        font-size: 15px;
-                    }
-
-                    .button-level-group {
-                        display: flex;
-                        align-items: flex-start;
-                    }
-
-                    .modal.fade .modal-header .modal-title {
-                        color: black !important;
-                        font-weight: bold;
-                        font-size: 24px;
-                    }
-
-                    .modal.fade * {
-                        font-family: "Poppins", "Open-Sans" !important;
-                    }
-
-                    .modal-body .form-check-label p {
-                        font-weight: normal;
-                    }
-                    
-
-                    .form-check-input:checked+.form-check-label {
-                        color: #1AB394 !important;
-                    }
-    
+        .modal-body p {
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -450,7 +426,12 @@
                     </div>
         
                     <div class="content-question" style="margin-top: 110px;"> <!-- Menambah margin-top di sini -->                        
-                        <a href="#" id="OpenModalBtn3" style="color:#1AB394; font-size: 14px; text-align: right; font-weight: 500;">Lihat List Soal</a>
+                        <a href="#" id="DetailSoal" style="color:#1AB394; font-size: 14px; text-align: right; font-weight: 500;"
+                        data-id="{{ $topik->id }}"
+                        data-difficult="{{$soals->where('id_topik', $topik->id)}}"
+                        {{-- data-topic="{{ $topik->nm_topik }}"
+                        data-question="{{ $soals->pertanyaan }}" --}}
+                        >Lihat List Soal</a>
                     </div>
                 </div>
             </div>
@@ -458,32 +439,29 @@
         @endforeach                    
         <!-- Tambah elemen col-sm-3 col-6 mb-4 sebanyak yang diperlukan -->
     </div>
+    
     <section id="dash-cartSection" class="dash-cartSection">        
-        <div class="row" style="background-color:white; margin:auto; overflow-y: auto;">           
+        <div class="row" id="test5" style="background-color:white; margin:auto; overflow-y: auto;">           
             <i class="bi bi-arrow-right-circle-fill" style="font-size: 40px; color: #58819F; cursor: pointer;"></i>   
-            <h1 style="color: #1AB394">Topik Matematika</h1>
+            <h1 id="test1" style="color: #1AB394"></h1>
+            
             <div class="col-md-6 mt-4">
                 <div class="card custom-card">
                     <div class="card-body">
                         <div class="button-group">
-                            <button class="custom-button-level"><span>Mudah</span></button>
-                            <button class="custom-button-topik"><span>Kompetensi
-                                    Dasar</span></button>
+                            <button id="test3" class="custom-button-level"><span></span></button>
+                            <button id="test4" class="custom-button-topik"><span></span></button>
                         </div>
                         <div class="content-question">
-                            <p style="font-size: 12px; font-weight: 500;"> Itu pun banyak ilmuwan terapan yang
-                                meminjam ilmu dasar atau ilmu terapan lain
-                                sehingga
-                                terbentuk program multidisiplin seperti arsitektur yang dijodohkan dengan
-                                antropologi atau
-                                arkeologi, akuntansi dengan ilmu keuangan.</p>
+                            <p id="test2" style="font-size: 12px; font-weight: 500;"> </p>
                             <a id="OpenModalBtn1"
                                 style="color:grey; font-size: 14px; align-self: flex-end;">Detail</a>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 mt-4">
+           
+            {{-- <div class="col-md-6 mt-4">
                 <div class="card custom-card">
                     <div class="card-body">
                         <div class="button-group">
@@ -503,16 +481,19 @@
                         </div>
                     </div>
                 </div>
+            </div> --}}
+        </div>
+        
+    </section>
+    <div id="overlay"></div>
+    <div id="dash-cartSection" class="dash-cartSection">
+        <div class="container">
+            <div class="row" id="test5">
+                <!-- Dynamic content will be inserted here -->
             </div>
         </div>
-    </section>
-    <div id="overlay"></div>    
-    <script>
-        $(document).ready(function() {
-            $('#OpenModalBtn1, #OpenModalBtn2, #OpenModalBtn3').click(function() {
-                $('#exampleModal').modal('show');
-            });
-        });
+        <button class="bi bi-arrow-right-circle-fill" id="closeCart">Close</button>
+    </div>
     </script>
 
     <script>
@@ -545,21 +526,79 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-        const btn = document.getElementById('OpenModalBtn3');
-        const hiddenSection = document.getElementById('dash-cartSection');
-        const overlay = document.getElementById('overlay');
-        const backButton = document.querySelector('.bi.bi-arrow-right-circle-fill');
+            const btn = document.querySelectorAll('#DetailSoal');  // Modified to select all elements with id 'DetailSoal'
+            const hiddenSection = document.getElementById('dash-cartSection');
+            const overlay = document.getElementById('overlay');
+            const closeButton = document.getElementById('closeCart');
 
-        btn.addEventListener('click', function () {
-        hiddenSection.classList.toggle('show'); // Tambahkan atau hapus kelas show
-        overlay.style.display = hiddenSection.classList.contains('show') ? 'block' : 'none'; // Tampilkan atau sembunyikan overlay
-    });
+            btn.forEach(function(button) {
+                button.addEventListener('click', function () {
+                    const id = this.getAttribute('data-id');
+                    getSoal(id);
+                });
+            });
 
-        backButton.addEventListener('click', function () {
-        hiddenSection.classList.remove('show'); // Hapus kelas show untuk menyembunyikan bagian
-        overlay.style.display = 'none'; // Sembunyikan overlay
-    });
-});
+            function getSoal(id) {
+                let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                $.ajax({
+                    url: `/topik/${id}`,
+                    method: 'GET',
+                    data: {
+                        _token: token,
+                        soalId: id,
+                    },
+                    success: function(response) {
+                        hiddenSection.classList.toggle('show');
+                        overlay.style.display = hiddenSection.classList.contains('show') ? 'block' : 'none';
+
+                        var semuaSoal = response.soal;
+                        var cardSoal = document.getElementById('test5');
+                        cardSoal.innerHTML = ''; // Clear existing content
+
+                        semuaSoal.forEach(function(item) {
+                            var contentCardSoal = `
+                                <div class="col-md-6 mt-4">
+                                    <div class="card custom-card">
+                                        <div class="card-body">
+                                            <div class="button-group">
+                                                <button class="custom-button-level"><span>${item.tingkat_kesulitan.nm_tingkat_kesulitan}</span></button>
+                                                <button class="custom-button-topik"><span>${item.pertanyaan}</span></button>
+                                            </div>
+                                            <div class="content-question">
+                                                <p style="font-size: 12px; font-weight: 500;">${item.topik.nm_topik}</p>
+                                                <a id="OpenModalBtn1" style="color:grey; font-size: 14px; align-self: flex-end;">Detail</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+
+                            cardSoal.innerHTML += contentCardSoal;
+                        });
+
+                        // Reapply click event to dynamically created Detail buttons
+                        document.querySelectorAll('#OpenModalBtn1').forEach(function (button) {
+                            button.addEventListener('click', function () {
+                                $('#exampleModal').modal('show');
+                            });
+                        });
+                    },
+                    error: function(response) {
+                        console.log(response.error);
+                    }
+                });
+            }
+
+            closeButton.addEventListener('click', function () {
+                hiddenSection.classList.remove('show');
+                overlay.style.display = 'none';
+            });
+
+            overlay.addEventListener('click', function () {
+                hiddenSection.classList.remove('show');
+                overlay.style.display = 'none';
+            });
+        });
     </script>
 </body>
 </html>
